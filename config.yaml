@@ -1,0 +1,106 @@
+# Project Configuration for Sentinel-2 Super-Resolution
+
+# Google Earth Engine
+gee:
+  project_id: "projectklymo"
+  project_number: "545691884206"
+
+# Data Configuration
+data:
+  # Data sources
+  primary_source: "gee"  # Google Earth Engine API streaming (no massive downloads)
+  
+  # Sentinel-2 bands (RGB)
+  sentinel_bands: ["B4", "B3", "B2"]  # Red, Green, Blue
+  
+  # Resolution
+  input_resolution: 10  # meters/pixel
+  target_resolution: 2.5  # 4x upscaling
+  scale_factor: 4
+  
+  # Patch settings
+  hr_patch_size: 256  # High-resolution patch size
+  lr_patch_size: 64   # Low-resolution patch size (256/4)
+  overlap: 32         # For tiling large images
+  
+  # Data collection
+  max_cloud_cover: 10  # percentage
+  date_start: "2023-01-01"
+  date_end: "2024-12-31"
+  num_training_samples: 1000
+  num_validation_samples: 200
+  
+  # Normalization (Sentinel-2 is 0-10000 range)
+  bit_depth: 16
+  normalize_min: 0
+  normalize_max: 3000  # Typical max reflectance value
+  output_range: [0, 1]
+
+# Model Configuration
+model:
+  name: "SwinIR"
+  upscale: 4
+  in_chans: 3
+  img_size: 64
+  window_size: 8
+  img_range: 1.0
+  depths: [6, 6, 6, 6, 6, 6]
+  embed_dim: 180
+  num_heads: [6, 6, 6, 6, 6, 6]
+  mlp_ratio: 2
+  upsampler: "pixelshuffle"
+  resi_connection: "1conv"
+
+# Training Configuration
+training:
+  epochs: 150
+  batch_size: 8
+  num_workers: 4
+  learning_rate: 0.0002
+  weight_decay: 0.0001
+  scheduler: "cosine"
+  warmup_epochs: 5
+  
+  # Loss weights
+  loss_l1_weight: 1.0
+  loss_perceptual_weight: 0.1
+  
+  # Validation
+  val_frequency: 5
+  save_frequency: 10
+  
+  # Checkpoints
+  checkpoint_dir: "./checkpoints"
+  resume_from: null
+
+# Inference Configuration
+inference:
+  model_path: "./checkpoints/best_model.pth"
+  tile_size: 256
+  tile_overlap: 32
+  batch_size: 1
+  save_format: "tiff"
+
+# Locations for testing (Indian cities as per hackathon)
+test_locations:
+  - name: "Delhi"
+    lat: 28.6139
+    lon: 77.2090
+    buffer: 5000  # meters
+  
+  - name: "Kanpur"
+    lat: 26.4499
+    lon: 80.3319
+    buffer: 5000
+  
+  - name: "Mumbai"
+    lat: 19.0760
+    lon: 72.8777
+    buffer: 5000
+
+# Evaluation Metrics
+metrics:
+  - "PSNR"
+  - "SSIM"
+  - "LPIPS"
+  - "Visual_Inspection"

@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+dist/
+*.egg-info/
+
+# Data
+data/raw/
+# data/processed/  # Allow small processed test data
+data/processed/train/  # Exclude if too large
+*.tif
+*.tiff
+*.geotiff
+
+# Model checkpoints
+checkpoints/
+*.pth
+*.pt
+*.h5
+
+# Google Earth Engine credentials
+.config/
+credentials.json
+token.json
+
+# Jupyter
+.ipynb_checkpoints/
+# *.ipynb  # Allow notebooks to be tracked
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+logs/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# External repos
+worldstrat/
